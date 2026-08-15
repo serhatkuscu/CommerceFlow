@@ -1,0 +1,36 @@
+## .NET
+bin/
+obj/
+*.user
+*.userosscache
+*.sln.docstates
+[Dd]ebug/
+[Rr]elease/
+TestResults/
+
+## Visual Studio
+.vs/
+*.suo
+
+## JetBrains Rider
+.idea/
+*.sln.iml
+
+## Docker (local overrides only -- Dockerfile/docker-compose.yml itself is tracked)
+docker-compose.override.yml
+docker-compose.override.yaml
+
+## Local environment / secrets -- never committed
+.env
+.env.*
+*.local.json
+secrets.json
+*.pfx
+*.user.config
+
+## Claude Code local settings (project-level rule; not relying on any global gitignore)
+.claude/settings.local.json
+
+## OS
+.DS_Store
+Thumbs.db
