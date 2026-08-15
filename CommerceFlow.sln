@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceFlow.Legacy.Models"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceFlow.Legacy.DAL", "legacy\CommerceFlow.Legacy.DAL\CommerceFlow.Legacy.DAL.csproj", "{CFE70B8D-8E25-4E3C-99ED-0B84F3C34870}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceFlow.Legacy.BLL", "legacy\CommerceFlow.Legacy.BLL\CommerceFlow.Legacy.BLL.csproj", "{EBAA1D23-AA9A-4C55-8ACD-BB44FF170947}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,10 +36,15 @@ Global
 		{CFE70B8D-8E25-4E3C-99ED-0B84F3C34870}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFE70B8D-8E25-4E3C-99ED-0B84F3C34870}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFE70B8D-8E25-4E3C-99ED-0B84F3C34870}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBAA1D23-AA9A-4C55-8ACD-BB44FF170947}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBAA1D23-AA9A-4C55-8ACD-BB44FF170947}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBAA1D23-AA9A-4C55-8ACD-BB44FF170947}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBAA1D23-AA9A-4C55-8ACD-BB44FF170947}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EE105714-7316-417A-971F-73D4DFD7A01F} = {02492F2C-F730-4738-9524-052CBD56D7C8}
 		{DAC08A28-772E-4236-9AAF-BDC04D96A0CF} = {B81C11C9-17CD-4008-88B5-11117CB5A6B9}
 		{CFE70B8D-8E25-4E3C-99ED-0B84F3C34870} = {B81C11C9-17CD-4008-88B5-11117CB5A6B9}
+		{EBAA1D23-AA9A-4C55-8ACD-BB44FF170947} = {B81C11C9-17CD-4008-88B5-11117CB5A6B9}
 	EndGlobalSection
 EndGlobal
