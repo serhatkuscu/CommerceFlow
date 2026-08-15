@@ -9,4 +9,12 @@ public static class OrderStatus
     public const int Pending = 0;
     public const int Confirmed = 1;
     public const int Cancelled = 2;
+
+    public static string ToDisplayName(int status) => status switch
+    {
+        Pending => "Pending",
+        Confirmed => "Confirmed",
+        Cancelled => "Cancelled",
+        _ => "Unknown"
+    };
 }
