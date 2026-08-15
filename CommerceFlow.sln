@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceFlow.Legacy.Web", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceFlow.FakeErp", "legacy\CommerceFlow.FakeErp\CommerceFlow.FakeErp.csproj", "{29CF6F04-439A-4486-AC4E-BA6B49D7C4F1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceFlow.Legacy.ErpExportJob", "legacy\CommerceFlow.Legacy.ErpExportJob\CommerceFlow.Legacy.ErpExportJob.csproj", "{88A2991D-AE96-4D3B-9995-6140CEA94FDF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,10 @@ Global
 		{29CF6F04-439A-4486-AC4E-BA6B49D7C4F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{29CF6F04-439A-4486-AC4E-BA6B49D7C4F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{29CF6F04-439A-4486-AC4E-BA6B49D7C4F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88A2991D-AE96-4D3B-9995-6140CEA94FDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88A2991D-AE96-4D3B-9995-6140CEA94FDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88A2991D-AE96-4D3B-9995-6140CEA94FDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88A2991D-AE96-4D3B-9995-6140CEA94FDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EE105714-7316-417A-971F-73D4DFD7A01F} = {02492F2C-F730-4738-9524-052CBD56D7C8}
@@ -60,5 +66,6 @@ Global
 		{EBAA1D23-AA9A-4C55-8ACD-BB44FF170947} = {B81C11C9-17CD-4008-88B5-11117CB5A6B9}
 		{F1FC9CE0-29A1-4ADF-B72A-CA9803B6EB4F} = {B81C11C9-17CD-4008-88B5-11117CB5A6B9}
 		{29CF6F04-439A-4486-AC4E-BA6B49D7C4F1} = {B81C11C9-17CD-4008-88B5-11117CB5A6B9}
+		{88A2991D-AE96-4D3B-9995-6140CEA94FDF} = {B81C11C9-17CD-4008-88B5-11117CB5A6B9}
 	EndGlobalSection
 EndGlobal
