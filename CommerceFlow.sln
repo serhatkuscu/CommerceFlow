@@ -21,6 +21,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceFlow.FakeErp", "leg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceFlow.Legacy.ErpExportJob", "legacy\CommerceFlow.Legacy.ErpExportJob\CommerceFlow.Legacy.ErpExportJob.csproj", "{88A2991D-AE96-4D3B-9995-6140CEA94FDF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{A28FAB1D-36D2-4399-852F-A875ED6705BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceFlow.Legacy.CharacterizationTests", "tests\CommerceFlow.Legacy.CharacterizationTests\CommerceFlow.Legacy.CharacterizationTests.csproj", "{E3B0E39E-7E84-48B4-9BEA-D1B5219B28FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +62,10 @@ Global
 		{88A2991D-AE96-4D3B-9995-6140CEA94FDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88A2991D-AE96-4D3B-9995-6140CEA94FDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88A2991D-AE96-4D3B-9995-6140CEA94FDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3B0E39E-7E84-48B4-9BEA-D1B5219B28FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3B0E39E-7E84-48B4-9BEA-D1B5219B28FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3B0E39E-7E84-48B4-9BEA-D1B5219B28FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3B0E39E-7E84-48B4-9BEA-D1B5219B28FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EE105714-7316-417A-971F-73D4DFD7A01F} = {02492F2C-F730-4738-9524-052CBD56D7C8}
@@ -67,5 +75,6 @@ Global
 		{F1FC9CE0-29A1-4ADF-B72A-CA9803B6EB4F} = {B81C11C9-17CD-4008-88B5-11117CB5A6B9}
 		{29CF6F04-439A-4486-AC4E-BA6B49D7C4F1} = {B81C11C9-17CD-4008-88B5-11117CB5A6B9}
 		{88A2991D-AE96-4D3B-9995-6140CEA94FDF} = {B81C11C9-17CD-4008-88B5-11117CB5A6B9}
+		{E3B0E39E-7E84-48B4-9BEA-D1B5219B28FE} = {A28FAB1D-36D2-4399-852F-A875ED6705BF}
 	EndGlobalSection
 EndGlobal
