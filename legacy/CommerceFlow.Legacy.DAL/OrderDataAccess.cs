@@ -31,43 +31,47 @@ public class OrderDataAccess
             itemsTable.Rows.Add(item.ProductId, item.Quantity);
         }
 
-        for (var attempt = 1; ; attempt++)
+        // Retry mechanics (attempt counting, backoff, give-up) live in RetryPolicy and are
+        // covered by RetryPolicyTests.cs against a fake exception -- not against a real deadlock.
+        // What's proved here, by inspection, is just this one line: SqlException.Number == 1205
+        // (deadlock victim) is the only thing considered retryable. Canonical ProductId-ascending
+        // lock order in usp_CreateOrder makes hitting this rare, not impossible. Bounded retry,
+        // not Polly -- Polly is reserved for the ERP integration story.
+        return RetryPolicy.Execute(
+            operation: () => ExecuteCreateOrder(customerId, itemsTable),
+            isRetryable: ex => ex is SqlException { Number: DeadlockErrorNumber },
+            maxAttempts: MaxAttempts,
+            backoff: attempt => Thread.Sleep(50 * attempt));
+    }
+
+    private int ExecuteCreateOrder(int customerId, DataTable itemsTable)
+    {
+        using var connection = new SqlConnection(_connectionString);
+        using var command = new SqlCommand("usp_CreateOrder", connection)
         {
-            using var connection = new SqlConnection(_connectionString);
-            using var command = new SqlCommand("usp_CreateOrder", connection)
-            {
-                CommandType = CommandType.StoredProcedure
-            };
+            CommandType = CommandType.StoredProcedure
+        };
 
-            command.Parameters.Add(new SqlParameter("@CustomerId", SqlDbType.Int) { Value = customerId });
+        command.Parameters.Add(new SqlParameter("@CustomerId", SqlDbType.Int) { Value = customerId });
 
-            var itemsParameter = command.Parameters.Add(new SqlParameter("@Items", SqlDbType.Structured));
-            itemsParameter.TypeName = "dbo.OrderItemTableType";
-            itemsParameter.Value = itemsTable;
+        var itemsParameter = command.Parameters.Add(new SqlParameter("@Items", SqlDbType.Structured));
+        itemsParameter.TypeName = "dbo.OrderItemTableType";
+        itemsParameter.Value = itemsTable;
 
-            var orderIdParameter = new SqlParameter("@OrderId", SqlDbType.Int) { Direction = ParameterDirection.Output };
-            command.Parameters.Add(orderIdParameter);
+        var orderIdParameter = new SqlParameter("@OrderId", SqlDbType.Int) { Direction = ParameterDirection.Output };
+        command.Parameters.Add(orderIdParameter);
 
-            try
-            {
-                connection.Open();
-                command.ExecuteNonQuery();
-                return (int)orderIdParameter.Value;
-            }
-            catch (SqlException ex) when (ex.Number is >= 51000 and <= 51004)
-            {
-                // The sproc already built the final, specific message (includes the relevant
-                // product/customer id) -- relayed verbatim, never parsed.
-                throw new BusinessRuleException(ex.Number, ex.Message);
-            }
-            catch (SqlException ex) when (ex.Number == DeadlockErrorNumber && attempt < MaxAttempts)
-            {
-                // Canonical ProductId-ascending lock order in usp_CreateOrder makes this rare,
-                // not impossible (see AC11). Bounded retry, not Polly -- Polly is reserved for
-                // the ERP integration story. Anything left after MaxAttempts propagates
-                // unwrapped, same as any other unexpected SqlException.
-                Thread.Sleep(50 * attempt);
-            }
+        try
+        {
+            connection.Open();
+            command.ExecuteNonQuery();
+            return (int)orderIdParameter.Value;
+        }
+        catch (SqlException ex) when (ex.Number is >= 51000 and <= 51004)
+        {
+            // The sproc already built the final, specific message (includes the relevant
+            // product/customer id) -- relayed verbatim, never parsed.
+            throw new BusinessRuleException(ex.Number, ex.Message);
         }
     }
 
