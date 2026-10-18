@@ -9,6 +9,12 @@ namespace CommerceFlow.Api;
 // than failing the request -- correlation ID is observability metadata, not a business concern.
 public sealed partial class CorrelationIdMiddleware
 {
+    // Public so GlobalExceptionHandler can read the resolved ID reliably. HttpContext.Items, not
+    // the response header, is the source of truth for that: ExceptionHandlerMiddleware resets the
+    // response before invoking IExceptionHandler, so a header set here cannot be assumed to
+    // survive an unhandled exception -- Items does.
+    public const string CorrelationIdItemKey = "CorrelationId";
+
     private const string HeaderName = "X-Correlation-ID";
     private const int MaxLength = 64;
 
@@ -35,6 +41,7 @@ public sealed partial class CorrelationIdMiddleware
                 rejection.Reason, rejection.ProvidedLength, rejection.ValueCount, correlationId);
         }
 
+        context.Items[CorrelationIdItemKey] = correlationId;
         context.Response.Headers[HeaderName] = correlationId;
 
         using (_logger.BeginScope(new Dictionary<string, object> { ["CorrelationId"] = correlationId }))

@@ -57,7 +57,7 @@ public class CorrelationIdMiddlewareTests
     {
         var context = new DefaultHttpContext();
         context.Request.Headers[HeaderName] = new StringValues(["id-one", "id-two"]);
-        var logger = new CapturingLogger();
+        var logger = new CapturingLogger<CorrelationIdMiddleware>();
         var middleware = new CorrelationIdMiddleware(_ => Task.CompletedTask, logger);
 
         await middleware.InvokeAsync(context);
@@ -87,7 +87,7 @@ public class CorrelationIdMiddlewareTests
         const string valid = "scope-check-id";
         var context = new DefaultHttpContext();
         context.Request.Headers[HeaderName] = valid;
-        var logger = new CapturingLogger();
+        var logger = new CapturingLogger<CorrelationIdMiddleware>();
         string? scopedIdDuringNext = null;
 
         var middleware = new CorrelationIdMiddleware(_ =>
@@ -101,7 +101,8 @@ public class CorrelationIdMiddlewareTests
         Assert.Equal(valid, scopedIdDuringNext);
     }
 
-    private static async Task<(DefaultHttpContext Context, CapturingLogger Logger)> InvokeAsync(string? headerValue)
+    private static async Task<(DefaultHttpContext Context, CapturingLogger<CorrelationIdMiddleware> Logger)> InvokeAsync(
+        string? headerValue)
     {
         var context = new DefaultHttpContext();
         if (headerValue is not null)
@@ -109,52 +110,11 @@ public class CorrelationIdMiddlewareTests
             context.Request.Headers[HeaderName] = headerValue;
         }
 
-        var logger = new CapturingLogger();
+        var logger = new CapturingLogger<CorrelationIdMiddleware>();
         var middleware = new CorrelationIdMiddleware(_ => Task.CompletedTask, logger);
 
         await middleware.InvokeAsync(context);
 
         return (context, logger);
-    }
-}
-
-// Minimal ILogger test double: captures BeginScope's CorrelationId (as a stack, mirroring real
-// ambient-scope nesting) and the formatted text of Information-level log calls. Deliberately not
-// a mocking framework -- there's exactly one interface to implement and the behavior needs to be
-// exactly right, not generic.
-internal sealed class CapturingLogger : ILogger<CorrelationIdMiddleware>
-{
-    private readonly Stack<string?> _scopeCorrelationIds = new();
-
-    public List<string> InformationLogs { get; } = [];
-
-    public string? CurrentScopeCorrelationId => _scopeCorrelationIds.Count > 0 ? _scopeCorrelationIds.Peek() : null;
-
-    public IDisposable BeginScope<TState>(TState state) where TState : notnull
-    {
-        string? correlationId = null;
-        if (state is IEnumerable<KeyValuePair<string, object>> properties)
-        {
-            correlationId = properties.FirstOrDefault(p => p.Key == "CorrelationId").Value?.ToString();
-        }
-
-        _scopeCorrelationIds.Push(correlationId);
-        return new PopScopeOnDispose(_scopeCorrelationIds);
-    }
-
-    public bool IsEnabled(LogLevel logLevel) => true;
-
-    public void Log<TState>(
-        LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
-    {
-        if (logLevel == LogLevel.Information)
-        {
-            InformationLogs.Add(formatter(state, exception));
-        }
-    }
-
-    private sealed class PopScopeOnDispose(Stack<string?> scopes) : IDisposable
-    {
-        public void Dispose() => scopes.Pop();
     }
 }
