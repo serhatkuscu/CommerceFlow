@@ -8,14 +8,20 @@ slate.
 
 Domain scope: **Order → Stock Reservation → Warehouse Routing → ERP Export → Shipment.**
 
-## Current milestone: M0 — legacy baseline
+## Current milestone: M1 complete — target skeleton alongside the M0 legacy baseline
 
-Everything under `database/` and `legacy/` right now is a **deliberately simple, legacy-style
-3-tier implementation** of order creation and ERP export — anemic models, raw ADO.NET, business
+Everything under `database/` and `legacy/` is a **deliberately simple, legacy-style 3-tier
+implementation** of order creation and ERP export — anemic models, raw ADO.NET, business
 invariants living in a stored procedure, HTTP 200 for business failures. This is not the target
-architecture; it exists to be migrated *from* (strangler-fig pattern) starting in M1, not extended
+architecture; it exists to be migrated *from* (strangler-fig pattern) starting in M2, not extended
 in place. See [`docs/legacy-technical-debt.md`](docs/legacy-technical-debt.md) for what's
-intentional and [`docs/roadmap.md`](docs/roadmap.md) for what comes next.
+intentional.
+
+Everything under `src/` is the target-side skeleton built in M1: `CommerceFlow.Api` plus an
+`Ordering` module (`Domain`/`Application`/`Infrastructure`), a deterministically-enforced
+dependency graph, Serilog structured logging, correlation ID propagation, and central exception
+handling. See [`docs/roadmap.md`](docs/roadmap.md) for the full M0/M1 breakdown and what's
+deliberately deferred to later milestones.
 
 ## Project structure
 
@@ -28,7 +34,13 @@ intentional and [`docs/roadmap.md`](docs/roadmap.md) for what comes next.
 | `legacy/CommerceFlow.Legacy.Web` | API | `OrdersController` (`POST`/`GET /api/orders`) |
 | `legacy/CommerceFlow.FakeErp` | — | Stand-in for the real external ERP system |
 | `legacy/CommerceFlow.Legacy.ErpExportJob` | Batch | One-shot, Task-Scheduler-style ERP export job |
-| `tests/CommerceFlow.Legacy.CharacterizationTests` | Tests | Testcontainers-backed characterization + concurrency tests |
+| `src/CommerceFlow.Api` | API (target) | Composition root: correlation ID middleware, central exception handling, Serilog |
+| `src/Modules/Ordering/CommerceFlow.Modules.Ordering.Domain` | Domain (target) | Zero dependencies — no other CommerceFlow project, no NuGet package |
+| `src/Modules/Ordering/CommerceFlow.Modules.Ordering.Application` | Application (target) | Depends only on `Domain` |
+| `src/Modules/Ordering/CommerceFlow.Modules.Ordering.Infrastructure` | Infrastructure (target) | Depends on `Domain` + `Application` |
+| `tests/CommerceFlow.Legacy.CharacterizationTests` | Tests | Testcontainers-backed characterization + concurrency tests (M0) |
+| `tests/CommerceFlow.ArchitectureTests` | Tests | Deterministic `.csproj` reference-graph checks (M1) |
+| `tests/CommerceFlow.Api.Tests` | Tests | Correlation ID + exception handling behavior (M1) |
 
 ## Prerequisites
 
@@ -116,12 +128,14 @@ dotnet run
 ```powershell
 dotnet build
 
-cd tests/CommerceFlow.Legacy.CharacterizationTests
-dotnet test
-```
+# No Docker needed:
+cd tests/CommerceFlow.ArchitectureTests; dotnet test; cd ../..
+cd tests/CommerceFlow.Api.Tests; dotnet test; cd ../..
 
-`dotnet test` needs Docker running — Testcontainers spins up its own ephemeral SQL Server
-container for the duration of the test run and disposes it afterward automatically.
+# Needs Docker running -- Testcontainers spins up its own ephemeral SQL Server
+# container for the test run and disposes it afterward automatically:
+cd tests/CommerceFlow.Legacy.CharacterizationTests; dotnet test; cd ../..
+```
 
 ## Local environment variables
 
