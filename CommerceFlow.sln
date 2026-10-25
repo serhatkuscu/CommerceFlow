@@ -43,6 +43,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceFlow.ArchitectureTe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceFlow.Api.Tests", "tests\CommerceFlow.Api.Tests\CommerceFlow.Api.Tests.csproj", "{06C9A213-C263-41DA-848A-F809443E9FFE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceFlow.Modules.Ordering.Domain.Tests", "tests\CommerceFlow.Modules.Ordering.Domain.Tests\CommerceFlow.Modules.Ordering.Domain.Tests.csproj", "{710A3DA7-790E-4F20-B36F-02E1E4D3FE94}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -108,6 +110,10 @@ Global
 		{06C9A213-C263-41DA-848A-F809443E9FFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06C9A213-C263-41DA-848A-F809443E9FFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06C9A213-C263-41DA-848A-F809443E9FFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{710A3DA7-790E-4F20-B36F-02E1E4D3FE94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{710A3DA7-790E-4F20-B36F-02E1E4D3FE94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{710A3DA7-790E-4F20-B36F-02E1E4D3FE94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{710A3DA7-790E-4F20-B36F-02E1E4D3FE94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EE105714-7316-417A-971F-73D4DFD7A01F} = {02492F2C-F730-4738-9524-052CBD56D7C8}
@@ -126,5 +132,6 @@ Global
 		{6C4A40A8-2964-4E4F-B898-0F0E401F598D} = {8068FFB9-05B1-438D-B6B4-68927ACEFA8F}
 		{43C838FC-DEE3-4319-A0EA-AC57946CB008} = {A28FAB1D-36D2-4399-852F-A875ED6705BF}
 		{06C9A213-C263-41DA-848A-F809443E9FFE} = {A28FAB1D-36D2-4399-852F-A875ED6705BF}
+		{710A3DA7-790E-4F20-B36F-02E1E4D3FE94} = {A28FAB1D-36D2-4399-852F-A875ED6705BF}
 	EndGlobalSection
 EndGlobal
