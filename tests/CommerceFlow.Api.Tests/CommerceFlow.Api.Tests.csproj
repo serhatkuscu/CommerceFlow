@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Testcontainers.MsSql" Version="4.14.0" />
     <PackageReference Include="coverlet.collector" Version="6.0.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -29,6 +30,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\CommerceFlow.Api\CommerceFlow.Api.csproj" />
+    <ProjectReference Include="..\..\database\CommerceFlow.Database.Migrations\CommerceFlow.Database.Migrations.csproj" />
+    <ProjectReference Include="..\..\legacy\CommerceFlow.Legacy.BLL\CommerceFlow.Legacy.BLL.csproj" />
   </ItemGroup>
 
 </Project>

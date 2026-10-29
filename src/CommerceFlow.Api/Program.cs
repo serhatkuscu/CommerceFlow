@@ -1,4 +1,6 @@
 using CommerceFlow.Api;
+using CommerceFlow.Modules.Ordering.Application;
+using CommerceFlow.Modules.Ordering.Infrastructure;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +11,9 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
     .WriteTo.Console());
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<IOrderQueries>(_ => new OrderQueries(
+    builder.Configuration["COMMERCEFLOW_DB_CONNECTION"]
+    ?? throw new InvalidOperationException("COMMERCEFLOW_DB_CONNECTION must be configured.")));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

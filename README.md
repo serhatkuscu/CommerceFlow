@@ -130,10 +130,11 @@ dotnet build
 
 # No Docker needed:
 cd tests/CommerceFlow.ArchitectureTests; dotnet test; cd ../..
-cd tests/CommerceFlow.Api.Tests; dotnet test; cd ../..
+dotnet test tests/CommerceFlow.Api.Tests --filter "FullyQualifiedName!~OrderReadIntegrationTests"
 
 # Needs Docker running -- Testcontainers spins up its own ephemeral SQL Server
 # container for the test run and disposes it afterward automatically:
+dotnet test tests/CommerceFlow.Api.Tests --filter "FullyQualifiedName~OrderReadIntegrationTests"
 cd tests/CommerceFlow.Legacy.CharacterizationTests; dotnet test; cd ../..
 ```
 
@@ -147,6 +148,12 @@ cd tests/CommerceFlow.Legacy.CharacterizationTests; dotnet test; cd ../..
 | `ASPNETCORE_ENVIRONMENT` | Web, FakeErp | Enables Swagger on Web when `Development` | Unset unless you set it |
 
 ## Example connection string
+
+The new `CommerceFlow.Api` also reads `COMMERCEFLOW_DB_CONNECTION` through its configuration.
+Set it before calling `GET /api/orders/{id}` (integer legacy order ID). The endpoint returns
+`OrderDetailsDto` JSON (`orderId`, `status`, `totalAmount`, `items`) or HTTP 404 when absent.
+Its read path calls `dbo.usp_GetOrderById` directly, without legacy project dependencies or
+mapping into the write-side domain aggregate. No database configuration is needed for Swagger.
 
 ```text
 Server=localhost,14330;Database=CommerceFlowDb;User Id=sa;Password=<YOUR_LOCAL_SA_PASSWORD>;TrustServerCertificate=True;

@@ -5,10 +5,8 @@ namespace CommerceFlow.ArchitectureTests;
 // Deterministic, .csproj-file-based checks -- NOT reflection/IL-based like NetArchTest. These
 // catch a risk NetArchTest structurally cannot: a <ProjectReference> that exists in the file but
 // is never actually used by any type, which NetArchTest's type-dependency walk would never flag
-// (it inspects compiled type usage, not the project file). NetArchTest rules land in a later
-// slice, once the module projects have real types to check -- writing them against today's empty
-// assemblies would either vacuously pass or require a "found zero types" guard that fails
-// immediately, neither of which protects anything yet.
+// (it inspects compiled type usage, not the project file). ControllerDependencyTests supplements
+// these checks with an IL-based rule now that the API contains a real controller.
 public class ProjectReferenceGraphTests
 {
     private static readonly string RepoRoot = FindRepoRoot();
