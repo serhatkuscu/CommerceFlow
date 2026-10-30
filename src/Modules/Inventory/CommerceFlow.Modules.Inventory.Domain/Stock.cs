@@ -14,6 +14,19 @@ namespace CommerceFlow.Modules.Inventory.Domain;
 // reserved in one business transaction) is NOT this aggregate's invariant -- it only matters when
 // coordinating several Stock instances at once, which is an Application-level concern for a
 // later slice, not something a single aggregate can own.
+//
+// Current status, recorded explicitly (2026-10-30), not to be read as "M3 done":
+// - This is a verified domain model, not yet wired into the production create-order flow.
+//   CreateOrderUseCase/OrderWriter never construct or call a Stock instance.
+// - The real owner of stock correctness today is still usp_CreateOrder's conditional UPDATE and
+//   its surrounding transaction -- that is what actually protects production data right now,
+//   not this class.
+// - Canonical ProductId-ascending ordering only reduces one specific deadlock pattern (two
+//   orders touching the same products in different submission order); it is not a blanket
+//   guarantee against every possible deadlock.
+// - How a future C# extraction would own the transaction across Ordering and Inventory, and
+//   coordinate multiple Stock instances atomically, is an open design question -- not decided,
+//   not implied by this class existing.
 public sealed class Stock
 {
     public int ProductId { get; }

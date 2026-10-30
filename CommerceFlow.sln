@@ -51,6 +51,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Inventory", "Inventory", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceFlow.Modules.Inventory.Domain", "src\Modules\Inventory\CommerceFlow.Modules.Inventory.Domain\CommerceFlow.Modules.Inventory.Domain.csproj", "{56B212BD-4667-49C1-9EEE-DD556B2B2010}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceFlow.Modules.Inventory.Application", "src\Modules\Inventory\CommerceFlow.Modules.Inventory.Application\CommerceFlow.Modules.Inventory.Application.csproj", "{DF37178A-C437-43FA-B57E-48544AD53FC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceFlow.Modules.Inventory.Infrastructure", "src\Modules\Inventory\CommerceFlow.Modules.Inventory.Infrastructure\CommerceFlow.Modules.Inventory.Infrastructure.csproj", "{46FE32BB-5412-491B-829A-003F59B4E6E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommerceFlow.Modules.Inventory.Infrastructure.Tests", "tests\CommerceFlow.Modules.Inventory.Infrastructure.Tests\CommerceFlow.Modules.Inventory.Infrastructure.Tests.csproj", "{4638D33D-A5B9-4CB7-8552-6C37B3E7FC24}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -128,6 +134,18 @@ Global
 		{56B212BD-4667-49C1-9EEE-DD556B2B2010}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56B212BD-4667-49C1-9EEE-DD556B2B2010}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56B212BD-4667-49C1-9EEE-DD556B2B2010}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF37178A-C437-43FA-B57E-48544AD53FC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF37178A-C437-43FA-B57E-48544AD53FC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF37178A-C437-43FA-B57E-48544AD53FC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF37178A-C437-43FA-B57E-48544AD53FC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46FE32BB-5412-491B-829A-003F59B4E6E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46FE32BB-5412-491B-829A-003F59B4E6E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46FE32BB-5412-491B-829A-003F59B4E6E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46FE32BB-5412-491B-829A-003F59B4E6E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4638D33D-A5B9-4CB7-8552-6C37B3E7FC24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4638D33D-A5B9-4CB7-8552-6C37B3E7FC24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4638D33D-A5B9-4CB7-8552-6C37B3E7FC24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4638D33D-A5B9-4CB7-8552-6C37B3E7FC24}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EE105714-7316-417A-971F-73D4DFD7A01F} = {02492F2C-F730-4738-9524-052CBD56D7C8}
@@ -150,5 +168,8 @@ Global
 		{B5E7E5FC-9F0B-4AC1-BC65-1A39DEE3752B} = {A28FAB1D-36D2-4399-852F-A875ED6705BF}
 		{396FC691-8C21-466D-8293-D9A1C378CE4F} = {20AB04ED-9B1B-4B57-92F4-2FCA953659FA}
 		{56B212BD-4667-49C1-9EEE-DD556B2B2010} = {396FC691-8C21-466D-8293-D9A1C378CE4F}
+		{DF37178A-C437-43FA-B57E-48544AD53FC3} = {396FC691-8C21-466D-8293-D9A1C378CE4F}
+		{46FE32BB-5412-491B-829A-003F59B4E6E5} = {396FC691-8C21-466D-8293-D9A1C378CE4F}
+		{4638D33D-A5B9-4CB7-8552-6C37B3E7FC24} = {A28FAB1D-36D2-4399-852F-A875ED6705BF}
 	EndGlobalSection
 EndGlobal

@@ -48,7 +48,7 @@ public class ProjectReferenceGraphTests
     }
 
     [Fact]
-    public void Application_ReferencesOnlyDomain()
+    public void Ordering_Application_ReferencesOnlyDomain()
     {
         var references = GetProjectReferences(
             "src/Modules/Ordering/CommerceFlow.Modules.Ordering.Application/CommerceFlow.Modules.Ordering.Application.csproj");
@@ -59,13 +59,35 @@ public class ProjectReferenceGraphTests
     }
 
     [Fact]
-    public void Infrastructure_ReferencesOnlyDomainAndApplication()
+    public void Ordering_Infrastructure_ReferencesOnlyDomainAndApplication()
     {
         var references = GetProjectReferences(
             "src/Modules/Ordering/CommerceFlow.Modules.Ordering.Infrastructure/CommerceFlow.Modules.Ordering.Infrastructure.csproj");
 
         Assert.Equal(
             new[] { "CommerceFlow.Modules.Ordering.Application", "CommerceFlow.Modules.Ordering.Domain" }.OrderBy(r => r),
+            references.OrderBy(r => r));
+    }
+
+    [Fact]
+    public void Inventory_Application_ReferencesOnlyDomain()
+    {
+        var references = GetProjectReferences(
+            "src/Modules/Inventory/CommerceFlow.Modules.Inventory.Application/CommerceFlow.Modules.Inventory.Application.csproj");
+
+        Assert.Equal(
+            new[] { "CommerceFlow.Modules.Inventory.Domain" }.OrderBy(r => r),
+            references.OrderBy(r => r));
+    }
+
+    [Fact]
+    public void Inventory_Infrastructure_ReferencesOnlyDomainAndApplication()
+    {
+        var references = GetProjectReferences(
+            "src/Modules/Inventory/CommerceFlow.Modules.Inventory.Infrastructure/CommerceFlow.Modules.Inventory.Infrastructure.csproj");
+
+        Assert.Equal(
+            new[] { "CommerceFlow.Modules.Inventory.Application", "CommerceFlow.Modules.Inventory.Domain" }.OrderBy(r => r),
             references.OrderBy(r => r));
     }
 
