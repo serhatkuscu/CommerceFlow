@@ -42,8 +42,14 @@ why the *concurrency* framing around it is weaker).
 
 No idempotency key exists. Rapid duplicate submission of an identical order creates **two**
 separate orders and double-decrements stock. This is a known bug, characterized as-is on purpose —
-fixing it is an explicit, called-out behavior change planned for M2, not something to quietly patch
-in M0.
+not something to quietly patch in M0.
+
+This note originally said fixing it was planned for M2. It was not: M2's actual scope, fixed in
+[`roadmap.md`](roadmap.md), was the `Order` aggregate plus a read and a write vertical slice
+against the existing legacy contract — idempotency was never part of that technical goal, and
+M2 closed without it. This remains an open, undemonstrated gap, not tied to a specific milestone
+yet; it is an Ordering-side request-handling concern, unrelated to Inventory/Stock extraction
+(M3).
 
 **Verification: none.** **Classification: Undemonstrated** (accepted gap).
 
