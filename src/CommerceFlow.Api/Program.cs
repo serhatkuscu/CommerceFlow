@@ -10,10 +10,13 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
     .Enrich.FromLogContext()
     .WriteTo.Console());
 
+string GetConnectionString() => builder.Configuration["COMMERCEFLOW_DB_CONNECTION"]
+    ?? throw new InvalidOperationException("COMMERCEFLOW_DB_CONNECTION must be configured.");
+
 builder.Services.AddControllers();
-builder.Services.AddScoped<IOrderQueries>(_ => new OrderQueries(
-    builder.Configuration["COMMERCEFLOW_DB_CONNECTION"]
-    ?? throw new InvalidOperationException("COMMERCEFLOW_DB_CONNECTION must be configured.")));
+builder.Services.AddScoped<IOrderQueries>(_ => new OrderQueries(GetConnectionString()));
+builder.Services.AddScoped<IOrderWriter>(_ => new OrderWriter(GetConnectionString()));
+builder.Services.AddScoped<CreateOrderUseCase>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

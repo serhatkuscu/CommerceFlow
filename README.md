@@ -155,6 +155,15 @@ Set it before calling `GET /api/orders/{id}` (integer legacy order ID). The endp
 Its read path calls `dbo.usp_GetOrderById` directly, without legacy project dependencies or
 mapping into the write-side domain aggregate. No database configuration is needed for Swagger.
 
+`POST /api/orders` (`{ customerId, items: [{ productId, quantity }] }` -- no price field exists
+on the request) calls `dbo.usp_CreateOrder` the same way: a direct ADO.NET call from
+`CommerceFlow.Modules.Ordering.Infrastructure`, no legacy project reference. Pricing, stock
+reservation, canonical lock ordering, and the transaction all still live in that stored
+procedure, unchanged. The five business errors it throws (customer/product not found,
+insufficient stock, empty order, invalid quantity) come back as `400` Problem Details with the
+procedure's own message; anything else is an unexpected `500` through the shared exception
+handler. Success returns `201` with `Location: /api/orders/{id}` and `{ orderId }`.
+
 ```text
 Server=localhost,14330;Database=CommerceFlowDb;User Id=sa;Password=<YOUR_LOCAL_SA_PASSWORD>;TrustServerCertificate=True;
 ```
