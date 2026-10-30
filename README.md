@@ -8,7 +8,7 @@ slate.
 
 Domain scope: **Order → Stock Reservation → Warehouse Routing → ERP Export → Shipment.**
 
-## Current milestone: M2 complete — Ordering extracted behind the target architecture
+## Current milestone: M3 complete — Inventory domain extracted and verified, not yet production-wired
 
 Everything under `database/` and `legacy/` is a **deliberately simple, legacy-style 3-tier
 implementation** of order creation and ERP export — anemic models, raw ADO.NET, business
@@ -20,11 +20,14 @@ stored procedures, it does not edit legacy to redirect to it. See
 
 `src/` is the target architecture: `CommerceFlow.Api` plus an `Ordering` module
 (`Domain`/`Application`/`Infrastructure`), a deterministically-enforced dependency graph, Serilog
-structured logging, correlation ID propagation, and central exception handling (M1) — now with a
+structured logging, correlation ID propagation, and central exception handling (M1) — with a
 real `Order` aggregate and a working `GET`/`POST /api/orders` pair backed by the same
-`usp_GetOrderById`/`usp_CreateOrder` legacy already uses (M2). See
-[`docs/roadmap.md`](docs/roadmap.md) for the full M0–M2 breakdown and what's deliberately
-deferred to later milestones.
+`usp_GetOrderById`/`usp_CreateOrder` legacy already uses (M2). An `Inventory` module now exists
+alongside it with its own `Stock` aggregate, proven behaviorally equivalent to
+`usp_CreateOrder`'s stock-decrement logic via shadow-mode tests — but not yet wired into the
+production create-order flow; `usp_CreateOrder`'s own transaction remains the real authority over
+stock today (M3). See [`docs/roadmap.md`](docs/roadmap.md) for the full M0–M3 breakdown and what's
+deliberately deferred to later milestones.
 
 ## Project structure
 
@@ -41,10 +44,15 @@ deferred to later milestones.
 | `src/Modules/Ordering/CommerceFlow.Modules.Ordering.Domain` | Domain (target) | Zero dependencies — no other CommerceFlow project, no NuGet package. `Order`/`OrderItem` aggregate (M2) |
 | `src/Modules/Ordering/CommerceFlow.Modules.Ordering.Application` | Application (target) | Depends only on `Domain`. `IOrderQueries`/`IOrderWriter` ports + `CreateOrderUseCase` (M2) |
 | `src/Modules/Ordering/CommerceFlow.Modules.Ordering.Infrastructure` | Infrastructure (target) | Depends on `Domain` + `Application`. ADO.NET adapters calling `usp_GetOrderById`/`usp_CreateOrder` directly (M2) |
+| `src/Modules/Inventory/CommerceFlow.Modules.Inventory.Domain` | Domain (target) | Zero dependencies. `Stock` aggregate: `TryReserve` invariant (M3) |
+| `src/Modules/Inventory/CommerceFlow.Modules.Inventory.Application` | Application (target) | Depends only on `Domain`. `IStockReader` port + `ReservationPlanner` (M3) |
+| `src/Modules/Inventory/CommerceFlow.Modules.Inventory.Infrastructure` | Infrastructure (target) | Depends on `Domain` + `Application`. Read-only ADO.NET `StockReader` against `dbo.Products` (M3) |
 | `tests/CommerceFlow.Legacy.CharacterizationTests` | Tests | Testcontainers-backed characterization + concurrency tests (M0) |
-| `tests/CommerceFlow.ArchitectureTests` | Tests | Deterministic `.csproj` reference-graph checks (M1) + IL-based controller/Infrastructure rule (M2) |
+| `tests/CommerceFlow.ArchitectureTests` | Tests | Deterministic `.csproj` reference-graph checks (M1) + IL-based controller/Infrastructure rule (M2) + Inventory reference-graph checks (M3) |
 | `tests/CommerceFlow.Modules.Ordering.Domain.Tests` | Tests | `Order` aggregate invariants, Docker-free (M2) |
+| `tests/CommerceFlow.Modules.Inventory.Domain.Tests` | Tests | `Stock` aggregate invariants, Docker-free (M3) |
 | `tests/CommerceFlow.Api.Tests` | Tests | Correlation ID + exception handling (M1); order read/create endpoints, Testcontainers-backed (M2) |
+| `tests/CommerceFlow.Modules.Inventory.Infrastructure.Tests` | Tests | Shadow-mode verification: `ReservationPlanner` vs. real `usp_CreateOrder`, Testcontainers-backed (M3) |
 
 ## Prerequisites
 
@@ -135,12 +143,14 @@ dotnet build
 # No Docker needed:
 cd tests/CommerceFlow.ArchitectureTests; dotnet test; cd ../..
 cd tests/CommerceFlow.Modules.Ordering.Domain.Tests; dotnet test; cd ../..
+cd tests/CommerceFlow.Modules.Inventory.Domain.Tests; dotnet test; cd ../..
 dotnet test tests/CommerceFlow.Api.Tests --filter "FullyQualifiedName!~IntegrationTests"
 
 # Needs Docker running -- Testcontainers spins up its own ephemeral SQL Server
 # container for the test run and disposes it afterward automatically:
 dotnet test tests/CommerceFlow.Api.Tests --filter "FullyQualifiedName~IntegrationTests"
 cd tests/CommerceFlow.Legacy.CharacterizationTests; dotnet test; cd ../..
+cd tests/CommerceFlow.Modules.Inventory.Infrastructure.Tests; dotnet test; cd ../..
 ```
 
 ## Local environment variables

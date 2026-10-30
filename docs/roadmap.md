@@ -17,7 +17,7 @@ Shipment). Each milestone below is an epic worked through as a backlog, not a ca
 | M0 | Legacy seed | Recognize and reproduce realistic legacy debt on purpose, not by accident | Working 3-tier order-creation + ERP export flow; ADO.NET; invariants owned by a stored procedure; a characterization-test safety net | ✅ |
 | M1 | Target skeleton | Prove Clean Architecture boundaries with code and enforced tests, not just words | `Domain`/`Application`/`Infrastructure`/`Api` projects, architecture tests, Serilog structured logging, correlation ID, central exception handling | ✅ |
 | M2 | Extract Ordering | Real strangler-fig extraction, not a rewrite | Order aggregate + state machine, CQRS/MediatR, legacy route strangled behind the new implementation | ✅ |
-| M3 | Extract Inventory/Stock | A genuine cross-module consistency boundary | Stock aggregate, reservation invariant; stock reservation stays synchronous at checkout, the outbox publishes the *result* after, never initiates it | ⬜ |
+| M3 | Extract Inventory/Stock | A genuine cross-module consistency boundary | Stock aggregate, reservation invariant; stock reservation stays synchronous at checkout, the outbox publishes the *result* after, never initiates it | ✅ |
 | M4 | Outbox + Hangfire | At-least-once delivery proven, not assumed | End-to-end outbox dispatch, idempotent consumers, a dispatcher-kill resilience test | ⬜ |
 | M5 | ERP integration + resilience | The reliability story a real ERP boundary actually needs | Anti-corruption layer, a deliberately flaky FakeErp, Polly retry/circuit breaker, reconciliation job | ⬜ |
 | M6 | Fulfillment/Warehouse | Workflow complexity beyond a single aggregate | Routing, partial shipments | ⬜ |
@@ -144,3 +144,55 @@ Ordering extraction, built as the domain model plus two independently committed 
 
 The legacy M0 projects remain untouched — extraction continues alongside them, not in place of
 them, through M3 onward.
+
+## M3 — completed (verified, not yet production-wired)
+
+Inventory extraction, deliberately scoped to a domain model plus a proof of behavioral
+equivalence — not a production cutover:
+
+- `CommerceFlow.Modules.Inventory.Domain`: `Stock` aggregate. `Stock.Create` rejects negative
+  quantity-on-hand (`CK_Products_StockQuantity CHECK (StockQuantity >= 0)`);
+  `TryReserve(quantity)` returns `false` rather than throwing on insufficient stock — the same
+  "expected business outcome, not a caller error" reasoning that kept `CreateOrderResult` a
+  value, not an exception, on the Ordering write path. Mirrors `usp_CreateOrder`'s own
+  conditional `UPDATE ... WHERE StockQuantity >= @Qty` / `THROW 51002` check (8 tests).
+- `CommerceFlow.Modules.Inventory.Application`: `IStockReader` port; `ReservationPlanner`, a
+  pure, in-memory decision over a snapshot of `Stock` instances — groups duplicate `ProductId`
+  lines by sum (matching AC8), orders them canonically ascending by `ProductId` (the same
+  deadlock-avoidance convention `usp_CreateOrder` uses across products in one transaction, though
+  this coordinator does not itself own a transaction or undo an already-succeeded reservation on
+  a later line's failure — it is a prediction, never persisted).
+- `CommerceFlow.Modules.Inventory.Infrastructure`: `StockReader`, direct read-only ADO.NET
+  against the same `dbo.Products` table `usp_CreateOrder` already owns — no reference to
+  `Legacy.DAL`/`BLL`/`Web`.
+- **Shadow-mode verification** (`ReservationPlannerShadowTests`): for the same order lines, the
+  C# `ReservationPlanner` decision is compared against the real, deployed `usp_CreateOrder`
+  decision — both the sufficient-stock/duplicate-line case and the insufficient-stock
+  all-or-nothing case (mirroring `Legacy.CharacterizationTests.OrderApiTests.
+  CreateOrder_InsufficientStock_IsAllOrNothing`). Both agree, proven against a real Testcontainers
+  SQL Server, not mocks.
+- `Inventory_Domain_*`/`Inventory_Application_*`/`Inventory_Infrastructure_*` reference-graph
+  tests in `CommerceFlow.ArchitectureTests`, mirroring the Ordering set exactly.
+- 76 tests total, 14 new since M2's 62: `ArchitectureTests` 6 → 10, plus the new
+  `Inventory.Domain.Tests` (8) and `Inventory.Infrastructure.Tests` (2) projects.
+
+**Deliberately deferred, not gaps:**
+- **Not wired into the production create-order flow.** `CreateOrderUseCase`/`OrderWriter` never
+  construct or call a `Stock` instance. The actual authority protecting stock in production
+  today is still `usp_CreateOrder`'s conditional `UPDATE` and its surrounding transaction — this
+  module proves the new decision logic *agrees* with that authority, it does not replace it yet.
+- **Cross-module transaction ownership is an open design question, not decided.** How a future
+  C# extraction would own a single transaction spanning Ordering and Inventory, and coordinate
+  multiple `Stock` instances atomically, was evaluated and deliberately not attempted this
+  milestone: it is not a small extraction step but a wholesale rewrite of transaction, locking,
+  rollback, and concurrency behavior currently proven correct inside `usp_CreateOrder`. Revisiting
+  it is a dedicated future initiative, not a continuation of M3's small-step cadence.
+- **Canonical `ProductId`-ascending ordering is a convention inside `ReservationPlanner`, not an
+  enforced, reusable invariant** — it reduces one specific deadlock pattern (two orders touching
+  the same products in different submission order), not a blanket guarantee.
+- **No outbox or event publication.** Publishing the *result* of a reservation is M4's job, and
+  presupposes a real reservation to publish the result of.
+
+The legacy M0 projects remain untouched. The real cross-module write path — the actual subject of
+"a genuine cross-module consistency boundary" — remains open and is explicitly not claimed as
+solved by this milestone.
