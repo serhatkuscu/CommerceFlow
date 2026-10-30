@@ -12,7 +12,7 @@ public class ProjectReferenceGraphTests
     private static readonly string RepoRoot = FindRepoRoot();
 
     [Fact]
-    public void Domain_HasNoProjectReferences()
+    public void Ordering_Domain_HasNoProjectReferences()
     {
         var references = GetProjectReferences(
             "src/Modules/Ordering/CommerceFlow.Modules.Ordering.Domain/CommerceFlow.Modules.Ordering.Domain.csproj");
@@ -21,10 +21,28 @@ public class ProjectReferenceGraphTests
     }
 
     [Fact]
-    public void Domain_HasNoPackageReferences()
+    public void Ordering_Domain_HasNoPackageReferences()
     {
         var packages = GetPackageReferences(
             "src/Modules/Ordering/CommerceFlow.Modules.Ordering.Domain/CommerceFlow.Modules.Ordering.Domain.csproj");
+
+        Assert.Empty(packages);
+    }
+
+    [Fact]
+    public void Inventory_Domain_HasNoProjectReferences()
+    {
+        var references = GetProjectReferences(
+            "src/Modules/Inventory/CommerceFlow.Modules.Inventory.Domain/CommerceFlow.Modules.Inventory.Domain.csproj");
+
+        Assert.Empty(references);
+    }
+
+    [Fact]
+    public void Inventory_Domain_HasNoPackageReferences()
+    {
+        var packages = GetPackageReferences(
+            "src/Modules/Inventory/CommerceFlow.Modules.Inventory.Domain/CommerceFlow.Modules.Inventory.Domain.csproj");
 
         Assert.Empty(packages);
     }
